@@ -29,7 +29,7 @@ func formatNetstat(ns map[string]netstat.Process) {
 	fmt.Println("|  PID  |    USER    |     IPLINK     |    IN(k)   |   OUT(k)   |   SENT(k/s) | RECEIVED(k/s) |    PROGRAM     |  ")
 	for itemId, info := range ns {
 
-		fmt.Printf("%-6s %-12s %-40s %-10d %-10d %-8d %-8d %s",
+		fmt.Printf("%-6s %-12s %-40s %-10d %-10d %-8d %-8d %s\n",
 			info.Pid, info.User, itemId, info.In, info.Out, info.InRate, info.OutRate, info.Exe)
 	}
 
