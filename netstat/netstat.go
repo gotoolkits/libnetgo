@@ -43,24 +43,23 @@ var STATE = map[string]string{
 }
 
 type Process struct {
-	User        string
-	Name        string
-	Pid         string
-	Exe         string
-	State       string
-	Ip          string
-	Port        int64
-	ForeignIp   string
-	ForeignPort int64
-	In          int64
-	Out         int64
-	InRate      int64
-	OutRate     int64
+	User        string `json:"user"`
+	Name        string `json:"name"`
+	Pid         string `json:"pid"`
+	Exe         string `json:"exe"`
+	State       string `json:"state"`
+	Ip          string `json:"ip"`
+	Port        int64  `json:"port"`
+	ForeignIp   string `json:"foreignip"`
+	ForeignPort int64  `json:"foreignport"`
+	In          int64  `json:"in"`
+	Out         int64  `json:"out"`
+	InRate      int64  `json:"inRate"`
+	OutRate     int64  `json:"outRate"`
 }
 
 func getData(t string) []string {
 	// Get data from tcp or udp file.
-
 	var proc_t string
 
 	if t == "tcp" {
@@ -176,7 +175,6 @@ func getProcessName(exe string) string {
 }
 
 func getUser(uid string) string {
-
 	// rewrite package os/user funcation LookupId dependence on cgo
 	u, err := user.LookupUserId(uid)
 	if err != nil {
@@ -227,8 +225,8 @@ func netstat(t string) []Process {
 		exe := getProcessExe(pid)
 		name := getProcessName(exe)
 
+		// itemid index pcap Map
 		itemId := fmt.Sprintf("%s:%v-%s:%v", ip, port, fip, fport)
-
 		if v, ok := packet.PkgAcc[itemId]; ok {
 			in = v["in"]
 			inRate = v["inRate"]
@@ -247,28 +245,24 @@ func netstat(t string) []Process {
 
 // Tcp func Get a slice of Process type with TCP data
 func Tcp() []Process {
-
 	data := netstat("tcp")
 	return data
 }
 
 // Udp func Get a slice of Process type with UDP data
 func Udp() []Process {
-
 	data := netstat("udp")
 	return data
 }
 
 // Tcp6 func Get a slice of Process type with TCP6 data
 func Tcp6() []Process {
-
 	data := netstat("tcp6")
 	return data
 }
 
 // Udp6 func Get a slice of Process type with UDP6 data
 func Udp6() []Process {
-
 	data := netstat("udp6")
 	return data
 }

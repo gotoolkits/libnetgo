@@ -184,7 +184,6 @@ func accumulator() {
 
 			}
 			//fmt.Println("==>", itemId, " in:", in, " out:", out, " lastAccIn:", pkgMap["lastAccIn"], " lastAccOut:", pkgMap["lastAccOut"], " inRate:", pkgMap["inRate"], " outRate:", pkgMap["outRate"])
-
 			pkgMap["lastAccIn"] = in
 			pkgMap["lastAccOut"] = out
 		}

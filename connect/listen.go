@@ -26,6 +26,5 @@ func GetListenPortAndNames() map[string]string {
 			m[port] = p.Name
 		}
 	}
-
 	return m
 }

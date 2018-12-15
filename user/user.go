@@ -45,7 +45,7 @@ func findUserId(uid string, r io.Reader) (*User, error) {
 			continue
 		}
 		text := strings.TrimSpace(removeComment(string(lineBytes)))
-		// kevin:x:1005:1006::/home/kevin:/usr/bin/zsh
+
 		parts := strings.SplitN(text, ":", 7)
 		if len(parts) < 6 {
 			continue
@@ -91,7 +91,6 @@ func findUsername(name string, r io.Reader) (*User, error) {
 			continue
 		}
 		text := strings.TrimSpace(removeComment(string(lineBytes)))
-		// kevin:x:1005:1006::/home/kevin:/usr/bin/zsh
 		parts := strings.SplitN(text, ":", 7)
 		if len(parts) < 6 {
 			continue

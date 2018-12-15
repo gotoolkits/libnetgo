@@ -6,7 +6,7 @@ import (
 	"net"
 )
 
-func GetLocalToConns() map[string]netstat.Process {
+func GetAllConns() map[string]netstat.Process {
 	m := map[string]netstat.Process{}
 
 	netTcpv4List := netstat.Tcp()
@@ -20,31 +20,23 @@ func GetLocalToConns() map[string]netstat.Process {
 	netTcpv6List := netstat.Tcp6()
 	for _, p := range netTcpv6List {
 		if p.State == "ESTABLISHED" {
-			// ipaddr := parseIP(p.Ip)
-			// port := fmt.Sprintf("%v", p.Port)
-			// if !isLoopback(ipaddr) && !isPublicIP(ipaddr) && !isListenPort(port) {
-			// 	m[p.Ip] = p.ForeignIp
-			// }
 			itemId := fmt.Sprintf("%s:%v-%s:%v", p.Ip, p.Port, p.ForeignIp, p.ForeignPort)
-
 			m[itemId] = p
-
 		}
 	}
-
 	return m
 }
 
-func GetRemoteFromConns() map[string]string {
-	m := map[string]string{}
+func GetLocalToConns() map[string]netstat.Process {
+	m := map[string]netstat.Process{}
 
 	netTcpv4List := netstat.Tcp()
 	for _, p := range netTcpv4List {
 		if p.State == "ESTABLISHED" {
-			ipaddr := parseIP(p.Ip)
-			port := fmt.Sprintf("%v", p.Port)
-			if !isLoopback(ipaddr) && isListenPort(port) {
-				m[p.ForeignIp] = port
+			ipaddr := parseIP(p.ForeignIp)
+			if !isPublicIP(ipaddr) {
+				itemId := fmt.Sprintf("%s:%v-%s:%v", p.Ip, p.Port, p.ForeignIp, p.ForeignPort)
+				m[itemId] = p
 			}
 		}
 	}
@@ -52,14 +44,41 @@ func GetRemoteFromConns() map[string]string {
 	netTcpv6List := netstat.Tcp6()
 	for _, p := range netTcpv6List {
 		if p.State == "ESTABLISHED" {
-			ipaddr := parseIP(p.Ip)
-			port := fmt.Sprintf("%v", p.Port)
-			if !isLoopback(ipaddr) && isListenPort(port) {
-				m[p.ForeignIp] = port
+			ipaddr := parseIP(p.ForeignIp)
+			if !isPublicIP(ipaddr) {
+				itemId := fmt.Sprintf("%s:%v-%s:%v", p.Ip, p.Port, p.ForeignIp, p.ForeignPort)
+				m[itemId] = p
+			}
+
+		}
+	}
+	return m
+}
+
+func GetRemoteFromConns() map[string]netstat.Process {
+	m := map[string]netstat.Process{}
+
+	netTcpv4List := netstat.Tcp()
+	for _, p := range netTcpv4List {
+		if p.State == "ESTABLISHED" {
+			ipaddr := parseIP(p.ForeignIp)
+			if isPublicIP(ipaddr) {
+				itemId := fmt.Sprintf("%s:%v-%s:%v", p.Ip, p.Port, p.ForeignIp, p.ForeignPort)
+				m[itemId] = p
 			}
 		}
 	}
 
+	netTcpv6List := netstat.Tcp6()
+	for _, p := range netTcpv6List {
+		if p.State == "ESTABLISHED" {
+			ipaddr := parseIP(p.ForeignIp)
+			if !isPublicIP(ipaddr) {
+				itemId := fmt.Sprintf("%s:%v-%s:%v", p.Ip, p.Port, p.ForeignIp, p.ForeignPort)
+				m[itemId] = p
+			}
+		}
+	}
 	return m
 }
 

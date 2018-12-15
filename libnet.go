@@ -1,20 +1,38 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"github.com/gotoolkits/libnetgo/connect"
 	"github.com/gotoolkits/libnetgo/netstat"
 	"github.com/gotoolkits/libnetgo/packet"
+	"os"
 	"time"
 )
 
-func main() {
+var (
+	host     string
+	interval int
+)
 
-	go packet.StartNetSniff("172.28.21.69")
+func init() {
+	flag.StringVar(&host, "ip", "", "ip address for pcap.")
+	flag.IntVar(&interval, "r", 2, "To get datas interval,default 2 second.")
+}
+
+func main() {
+	flag.Parse()
+
+	if len(host) < 8 {
+		fmt.Println("please set ip address for pcap, '-ip x.x.x.x' ")
+		os.Exit(1)
+	}
+
+	go packet.StartNetSniff(host)
 
 	for {
 		formatNetstat(connect.GetLocalToConns())
-		time.Sleep(2 * time.Second)
+		time.Sleep(time.Duration(interval) * time.Second)
 	}
 
 }
