@@ -13,11 +13,13 @@ import (
 var (
 	host     string
 	interval int
+	connType string
 )
 
 func init() {
 	flag.StringVar(&host, "ip", "", "ip address for pcap.")
 	flag.IntVar(&interval, "r", 2, "To get datas interval,default 2 second.")
+	flag.StringVar(&connType, "t", "all", "all/remote/local")
 }
 
 func main() {
@@ -31,7 +33,15 @@ func main() {
 	go packet.StartNetSniff(host)
 
 	for {
-		formatNetstat(connect.GetLocalToConns())
+
+		if connType == "all" {
+			formatNetstat(connect.GetAllConns())
+		} else if connType == "local" {
+			formatNetstat(connect.GetLocalToConns())
+		} else {
+			formatNetstat(connect.GetRemoteFromConns())
+		}
+
 		time.Sleep(time.Duration(interval) * time.Second)
 	}
 
