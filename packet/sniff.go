@@ -1,12 +1,13 @@
 package packet
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"github.com/google/gopacket"
 	"github.com/google/gopacket/layers"
 	"github.com/google/gopacket/pcap"
-	"log"
+	log "github.com/sirupsen/logrus"
 	"net"
 	"time"
 )
@@ -38,17 +39,31 @@ var (
 
 	PkgAcc  map[string]map[string]int64
 	AccIntv int64 = 3
+	ctx     context.Context
+	cancel  context.CancelFunc
+
+	Start bool
 )
 
 func init() {
 	PkgAcc = make(map[string]map[string]int64)
+	ctx, cancel = context.WithCancel(context.Background())
 }
 
 func StartNetSniff(ipAddr string) {
-	go startNetSniff(ipAddr)
+	if Start {
+		return
+	}
+	go startNetSniff(ctx, ipAddr)
 }
 
-func startNetSniff(ipAddr string) {
+func StopNetSniff() {
+	cancel()
+	Start = false
+}
+
+func startNetSniff(ctx context.Context, ipAddr string) {
+
 	handle, err := getPcapHandle(ipAddr)
 	if err != nil {
 		return
@@ -57,76 +72,85 @@ func startNetSniff(ipAddr string) {
 
 	packetSource := gopacket.NewPacketSource(handle, handle.LinkType())
 
-	go accumulator()
+	go accumulator(ctx)
 
+	Start = true
 	for packet := range packetSource.Packets() {
-		parser := gopacket.NewDecodingLayerParser(
-			layers.LayerTypeEthernet,
-			&ethLayer,
-			&ipLayer,
-			&tcpLayer,
-		)
-		foundLayerTypes := []gopacket.LayerType{}
+		select {
+		case <-ctx.Done():
+			log.Warningln("Packet sniff Stop")
+			break
+		default:
+			parser := gopacket.NewDecodingLayerParser(
+				layers.LayerTypeEthernet,
+				&ethLayer,
+				&ipLayer,
+				&tcpLayer,
+			)
+			foundLayerTypes := []gopacket.LayerType{}
 
-		err := parser.DecodeLayers(packet.Data(), &foundLayerTypes)
-		if err != nil {
-			//	fmt.Println("Trouble decoding layers: ", err)
-		}
+			err := parser.DecodeLayers(packet.Data(), &foundLayerTypes)
+			if err != nil {
+				//	fmt.Println("Trouble decoding layers: ", err)
+			}
 
-		for _, layerType := range foundLayerTypes {
-			if layerType == layers.LayerTypeIPv4 {
+			for _, layerType := range foundLayerTypes {
+				if layerType == layers.LayerTypeIPv4 {
 
-				if ipLayer.SrcIP.String() != ipAddr {
-					LocalIP = ipLayer.DstIP
-					RemoteIP = ipLayer.SrcIP
-					LocalPort = tcpLayer.DstPort
-					RemotePort = tcpLayer.SrcPort
-					pLen = ipLayer.Length
+					if ipLayer.SrcIP.String() != ipAddr {
+						LocalIP = ipLayer.DstIP
+						RemoteIP = ipLayer.SrcIP
+						LocalPort = tcpLayer.DstPort
+						RemotePort = tcpLayer.SrcPort
+						pLen = ipLayer.Length
 
-					Dir = "in"
+						Dir = "in"
 
-					itemId := fmt.Sprintf("%s:%d-%s:%d", LocalIP, LocalPort, RemoteIP, RemotePort)
+						itemId := fmt.Sprintf("%s:%d-%s:%d", LocalIP, LocalPort, RemoteIP, RemotePort)
 
-					if _, ok := PkgAcc[itemId]; !ok {
-						PkgAcc[itemId] = map[string]int64{
-							"in":          0,
-							"out":         0,
-							"inRate":      0,
-							"outRate":     0,
-							"lastAccTime": 0,
-							"lastAccIn":   0,
-							"lastAccOut":  0,
+						if _, ok := PkgAcc[itemId]; !ok {
+							PkgAcc[itemId] = map[string]int64{
+								"in":          0,
+								"out":         0,
+								"inRate":      0,
+								"outRate":     0,
+								"lastAccTime": 0,
+								"lastAccIn":   0,
+								"lastAccOut":  0,
+							}
 						}
-					}
 
-					PkgAcc[itemId][Dir] = PkgAcc[itemId][Dir] + int64(pLen)
+						PkgAcc[itemId][Dir] = PkgAcc[itemId][Dir] + int64(pLen)
 
-				} else {
-					LocalIP = ipLayer.SrcIP
-					RemoteIP = ipLayer.DstIP
-					LocalPort = tcpLayer.SrcPort
-					RemotePort = tcpLayer.DstPort
-					pLen = ipLayer.Length
+					} else {
+						LocalIP = ipLayer.SrcIP
+						RemoteIP = ipLayer.DstIP
+						LocalPort = tcpLayer.SrcPort
+						RemotePort = tcpLayer.DstPort
+						pLen = ipLayer.Length
 
-					Dir = "out"
+						Dir = "out"
 
-					itemId := fmt.Sprintf("%s:%d-%s:%d", LocalIP, LocalPort, RemoteIP, RemotePort)
+						itemId := fmt.Sprintf("%s:%d-%s:%d", LocalIP, LocalPort, RemoteIP, RemotePort)
 
-					if _, ok := PkgAcc[itemId]; !ok {
-						PkgAcc[itemId] = map[string]int64{
-							"in":          0,
-							"out":         0,
-							"inRate":      0,
-							"outRate":     0,
-							"lastAccTime": 0,
-							"lastAccIn":   0,
-							"lastAccOut":  0,
+						if _, ok := PkgAcc[itemId]; !ok {
+							PkgAcc[itemId] = map[string]int64{
+								"in":          0,
+								"out":         0,
+								"inRate":      0,
+								"outRate":     0,
+								"lastAccTime": 0,
+								"lastAccIn":   0,
+								"lastAccOut":  0,
+							}
 						}
+						PkgAcc[itemId][Dir] = PkgAcc[itemId][Dir] + int64(pLen)
 					}
-					PkgAcc[itemId][Dir] = PkgAcc[itemId][Dir] + int64(pLen)
 				}
 			}
+
 		}
+
 	}
 }
 
@@ -152,7 +176,7 @@ func getPcapHandle(ip string) (*pcap.Handle, error) {
 	if err != nil {
 		return nil, err
 	}
-	log.Println("Start netconn...")
+	log.Println("⇨ Starting net traffic monitor...")
 	var filter string = "tcp and (not broadcast and not multicast)"
 	err = h.SetBPFFilter(filter)
 	if err != nil {
@@ -161,39 +185,47 @@ func getPcapHandle(ip string) (*pcap.Handle, error) {
 	return h, nil
 }
 
-func accumulator() {
+func accumulator(ctx context.Context) {
 	for {
-		for _, pkgMap := range PkgAcc {
-			start := time.Now().Unix()
-			in := pkgMap["in"]
-			out := pkgMap["out"]
+		select {
+		case <-ctx.Done():
+			log.Warningln("accumulator thread is closed.")
+			return
+		default:
+			for _, pkgMap := range PkgAcc {
+				start := time.Now().Unix()
+				in := pkgMap["in"]
+				out := pkgMap["out"]
 
-			if pkgMap["lastAccTime"] == 0 {
-				pkgMap["lastAccTime"] = start - AccIntv
+				if pkgMap["lastAccTime"] == 0 {
+					pkgMap["lastAccTime"] = start - AccIntv
+				}
+
+				last := pkgMap["lastAccTime"]
+				pkgMap["lastAccTime"] = start
+
+				durSec := start - last
+
+				if in == 0 {
+					pkgMap["inRate"] = 0
+				} else {
+					pkgMap["inRate"] = (in - pkgMap["lastAccIn"]) / durSec
+				}
+
+				if out == 0 {
+					pkgMap["outRate"] = 0
+				} else {
+					pkgMap["outRate"] = (out - pkgMap["lastAccOut"]) / durSec
+
+				}
+
+				pkgMap["lastAccIn"] = in
+				pkgMap["lastAccOut"] = out
 			}
 
-			last := pkgMap["lastAccTime"]
-			pkgMap["lastAccTime"] = start
+			time.Sleep(time.Duration(AccIntv) * time.Second)
 
-			durSec := start - last
-
-			if in == 0 {
-				pkgMap["inRate"] = 0
-			} else {
-				pkgMap["inRate"] = (in - pkgMap["lastAccIn"]) / durSec
-			}
-
-			if out == 0 {
-				pkgMap["outRate"] = 0
-			} else {
-				pkgMap["outRate"] = (out - pkgMap["lastAccOut"]) / durSec
-
-			}
-			//fmt.Println("==>", itemId, " in:", in, " out:", out, " lastAccIn:", pkgMap["lastAccIn"], " lastAccOut:", pkgMap["lastAccOut"], " inRate:", pkgMap["inRate"], " outRate:", pkgMap["outRate"])
-			pkgMap["lastAccIn"] = in
-			pkgMap["lastAccOut"] = out
 		}
 
-		time.Sleep(time.Duration(AccIntv) * time.Second)
 	}
 }

@@ -31,6 +31,8 @@ func ServerRun() {
 	e.GET("/api/getlconns", FnGetLocalConns)
 	e.GET("/api/getrconns", FnGetRemoteConns)
 
+	e.POST("/api/sniff", FnSniffStart)
+
 	log.Info("⇨ http server starting on ", ":"+sHost)
 	svrstus.Stime = time.Now().Format("2006-01-02 15:04:05")
 
