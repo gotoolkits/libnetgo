@@ -68,7 +68,6 @@ func startNetSniff(ctx context.Context, ipAddr string) {
 	if err != nil {
 		return
 	}
-	defer handle.Close()
 
 	packetSource := gopacket.NewPacketSource(handle, handle.LinkType())
 
@@ -79,7 +78,8 @@ func startNetSniff(ctx context.Context, ipAddr string) {
 		select {
 		case <-ctx.Done():
 			log.Warningln("Packet sniff Stop")
-			break
+			handle.Close()
+			return
 		default:
 			parser := gopacket.NewDecodingLayerParser(
 				layers.LayerTypeEthernet,
