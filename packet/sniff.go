@@ -22,7 +22,7 @@ type NetPkt struct {
 }
 
 var (
-	snapshot_len int32 = 1024
+	snapshot_len int32 = 65536
 	promiscuous  bool  = false
 	err          error
 	timeout      time.Duration = 30 * time.Second
