@@ -60,11 +60,11 @@ func FnGetConns(c echo.Context) error {
 	return c.JSONPretty(http.StatusOK, connect.GetConns("all"), " ")
 }
 
-func FnFormatNodes(c echo.Context) error {
-	return c.JSONPretty(http.StatusOK, nil, " ")
+func FnGetLocalConns(c echo.Context) error {
+	return c.JSONPretty(http.StatusOK, connect.GetConns("local"), " ")
 
 }
 
-func FnGetDownNodes(c echo.Context) error {
-	return c.JSONPretty(http.StatusOK, nil, " ")
+func FnGetRemoteConns(c echo.Context) error {
+	return c.JSONPretty(http.StatusOK, connect.GetConns("remote"), " ")
 }

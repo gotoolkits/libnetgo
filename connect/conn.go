@@ -15,6 +15,15 @@ func GetConns(connType string) map[string]netstat.Process {
 		return getRemoteConns()
 	}
 }
+func GetConnsV6(connType string) map[string]netstat.Process {
+	if connType == "all" {
+		return getAllConnsV6()
+	} else if connType == "local" {
+		return getLocalConnsV6()
+	} else {
+		return getRemoteConnsV6()
+	}
+}
 
 func getAllConns() map[string]netstat.Process {
 	m := map[string]netstat.Process{}
@@ -26,6 +35,11 @@ func getAllConns() map[string]netstat.Process {
 			m[itemId] = p
 		}
 	}
+	return m
+}
+
+func getAllConnsV6() map[string]netstat.Process {
+	m := map[string]netstat.Process{}
 
 	netTcpv6List := netstat.Tcp6()
 	for _, p := range netTcpv6List {
@@ -50,6 +64,10 @@ func getLocalConns() map[string]netstat.Process {
 			}
 		}
 	}
+	return m
+}
+func getLocalConnsV6() map[string]netstat.Process {
+	m := map[string]netstat.Process{}
 
 	netTcpv6List := netstat.Tcp6()
 	for _, p := range netTcpv6List {
@@ -78,6 +96,10 @@ func getRemoteConns() map[string]netstat.Process {
 			}
 		}
 	}
+	return m
+}
+func getRemoteConnsV6() map[string]netstat.Process {
+	m := map[string]netstat.Process{}
 
 	netTcpv6List := netstat.Tcp6()
 	for _, p := range netTcpv6List {
@@ -105,7 +127,10 @@ func GetListenPortAndNames() map[string]string {
 			}
 		}
 	}
-
+	return m
+}
+func GetListenPortAndNamesV6() map[string]string {
+	m := map[string]string{}
 	netTcpv6List := netstat.Tcp6()
 	for _, p := range netTcpv6List {
 		if p.State == "LISTEN" {

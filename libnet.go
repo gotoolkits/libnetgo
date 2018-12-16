@@ -35,6 +35,7 @@ func main() {
 	flag.Parse()
 	if h {
 		flag.Usage()
+		os.Exit(0)
 	}
 	if svr {
 		go api.ServerRun()
@@ -69,7 +70,7 @@ func formatNetstat(ns map[string]netstat.Process) {
 }
 
 func usage() {
-	fmt.Fprintf(os.Stderr, `libnetgo version: libnet/1.0
+	fmt.Fprintf(os.Stderr, `libnetgo version: libnetgo/1.0
 Usage: libnetgo [-hs] [-ip ipAddr] [-r interval] [-t all/remote/local] 
 
 Options:
