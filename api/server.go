@@ -30,6 +30,8 @@ func ServerRun() {
 	e.GET("/api/getconns", FnGetConns)
 	e.GET("/api/getlconns", FnGetLocalConns)
 	e.GET("/api/getrconns", FnGetRemoteConns)
+	e.GET("/api/sniffon", FnSniffOn)
+	e.GET("/api/sniffoff", FnSniffOff)
 
 	e.POST("/api/sniff", FnSniffStart)
 

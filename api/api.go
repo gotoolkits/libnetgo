@@ -38,6 +38,7 @@ var (
 	svrstus SvrStatus
 	uuid    = "c98bad34-e0f2-4eec-bf98-2eda26af935c"
 	info    SysInfo
+	HostIP  string
 )
 
 func init() {
@@ -77,6 +78,16 @@ func FnGetLocalConns(c echo.Context) error {
 
 func FnGetRemoteConns(c echo.Context) error {
 	return c.JSONPretty(http.StatusOK, connect.GetConns("remote"), " ")
+}
+
+func FnSniffOn(c echo.Context) error {
+	packet.StartNetSniff(HostIP)
+	return c.JSONPretty(http.StatusOK, packet.Start, " ")
+}
+
+func FnSniffOff(c echo.Context) error {
+	packet.StopNetSniff()
+	return c.JSONPretty(http.StatusOK, packet.Start, " ")
 }
 
 func FnSniffStart(c echo.Context) error {

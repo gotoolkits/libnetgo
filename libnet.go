@@ -43,6 +43,7 @@ func main() {
 
 	if len(host) > 1 {
 		if ok, _ := common.VerifyIP(host); ok {
+			api.HostIP = host
 			packet.StartNetSniff(host)
 		}
 	}
