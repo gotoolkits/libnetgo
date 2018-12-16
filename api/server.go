@@ -21,6 +21,7 @@ func ServerRun() {
 	}))
 
 	// e.Static("/static", "assets")
+
 	//self running status for monitor
 	e.GET("/health", fnHealthCheck)
 	e.GET("/status", fnStatus)

@@ -12,12 +12,7 @@ import (
 type SvrStatus struct {
 	Stime      string `json:"start_time"`
 	SniffStart bool   `json:"Sniff_Start"`
-	// UserItemMapSize    int      `json:"userItemMapSize"`
-	// WanningUserMapSize int      `json:"wanningUserMapSize"`
-	// ExpiredQueue       UQueue   `json:"expiredQueue"`
-	// ThreeDayQueue      UQueue   `json:"3dayQueue"`
-	// WeekQueue          UQueue   `json:"7dayQueue"`
-	// HalfMonthQueue     UQueue   `json:"15dayQueue"`
+	// Queue          UQueue   `json:"Queue"`
 	SyncErrUsers []string `json:"syncErrUsers"`
 }
 
@@ -30,8 +25,9 @@ type SysInfo struct {
 }
 
 type Switch struct {
-	Token string `json:"token" xml:"token" form:"token" query:"token"`
-	Code  string `json:"Code" xml:"Code" form:"Code" query:"Code"`
+	Token  string `json:"token" xml:"token" form:"token" query:"token"`
+	HostIp string `json:"HostIp" xml:"HostIp" form:"HostIp" query:"HostIp"`
+	Code   string `json:"Code" xml:"Code" form:"Code" query:"Code"`
 }
 
 var (
@@ -82,12 +78,12 @@ func FnGetRemoteConns(c echo.Context) error {
 
 func FnSniffOn(c echo.Context) error {
 	packet.StartNetSniff(HostIP)
-	return c.JSONPretty(http.StatusOK, packet.Start, " ")
+	return c.JSONPretty(http.StatusOK, "done", " ")
 }
 
 func FnSniffOff(c echo.Context) error {
 	packet.StopNetSniff()
-	return c.JSONPretty(http.StatusOK, packet.Start, " ")
+	return c.JSONPretty(http.StatusOK, "done", " ")
 }
 
 func FnSniffStart(c echo.Context) error {
@@ -97,7 +93,7 @@ func FnSniffStart(c echo.Context) error {
 		return c.String(http.StatusUnauthorized, "Parse_Failed")
 	}
 
-	if sw.Code == "" || sw.Token == "" {
+	if sw.Code == "" || sw.Token == "" || sw.HostIp == "" {
 		return c.String(http.StatusNonAuthoritativeInfo, "Args_Null")
 	}
 	if sw.Token != "c98bad34-e0f2-4eec-bf98-2eda26af935c" {
@@ -105,9 +101,11 @@ func FnSniffStart(c echo.Context) error {
 	}
 
 	if sw.Code == "1" {
+		packet.StartNetSniff(sw.HostIp)
 		return c.String(http.StatusOK, "On")
 	}
 	if sw.Code == "0" {
+		packet.StopNetSniff()
 		return c.String(http.StatusOK, "Off")
 	}
 	return c.String(http.StatusOK, "None")

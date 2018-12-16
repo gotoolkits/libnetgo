@@ -13,9 +13,3 @@ const (
 	UDP      uint8 = 17
 	TCP      uint8 = 6
 )
-
-func init() {
-	// 硬编码白名单
-	filter.Port = []int{137, 139, 445}
-	filter.File = []string{`c:\windows\temp`}
-}

@@ -7,7 +7,8 @@ import (
 	"github.com/gotoolkits/libnetgo/common"
 	"github.com/gotoolkits/libnetgo/connect"
 	"github.com/gotoolkits/libnetgo/netstat"
-	"github.com/gotoolkits/libnetgo/packet"
+	//	"github.com/gotoolkits/libnetgo/packet"
+	log "github.com/sirupsen/logrus"
 	"os"
 	"time"
 )
@@ -23,7 +24,7 @@ var (
 
 func init() {
 	flag.BoolVar(&h, "h", false, "libnetgo help")
-	flag.BoolVar(&svr, "s", false, "api server")
+	flag.BoolVar(&svr, "s", true, "api server")
 	flag.BoolVar(&console, "c", false, "console mode")
 	flag.StringVar(&host, "ip", "", "ip address for pcap.")
 	flag.IntVar(&interval, "r", 2, "To get datas interval,default 2 second.")
@@ -44,8 +45,9 @@ func main() {
 	if len(host) > 1 {
 		if ok, _ := common.VerifyIP(host); ok {
 			api.HostIP = host
-			packet.StartNetSniff(host)
 		}
+	} else {
+		log.Warningln("Unspecified IP parameter'-ip', unable to open packet capture function")
 	}
 
 	for {
