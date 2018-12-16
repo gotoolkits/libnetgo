@@ -77,13 +77,19 @@ func FnGetRemoteConns(c echo.Context) error {
 }
 
 func FnSniffOn(c echo.Context) error {
+	if len(HostIP) > 1 {
+		return c.String(http.StatusOK, "Unspecified IP parameter'-ip', unable to open packet capture function")
+	}
 	packet.StartNetSniff(HostIP)
-	return c.JSONPretty(http.StatusOK, "done", " ")
+	return c.String(http.StatusOK, "done")
 }
 
 func FnSniffOff(c echo.Context) error {
+	if len(HostIP) > 1 {
+		return c.String(http.StatusOK, "Unspecified IP parameter'-ip', unable to open packet capture function")
+	}
 	packet.StopNetSniff()
-	return c.JSONPretty(http.StatusOK, "done", " ")
+	return c.String(http.StatusOK, "done")
 }
 
 func FnSniffStart(c echo.Context) error {
