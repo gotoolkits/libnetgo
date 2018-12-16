@@ -68,6 +68,7 @@ func StopNetSniff() {
 		return
 	}
 	Cancel()
+	PkgAcc = make(map[string]map[string]int64)
 }
 
 func startNetSniff(ctx context.Context, ipAddr string) {
@@ -195,7 +196,7 @@ func getPcapHandle(ip string) (*pcap.Handle, error) {
 }
 
 func accumulator(ctx context.Context) {
-	log.Warningln("accumulator thread is starting...")
+	log.Infoln("⇨ accumulator thread is starting...")
 	for {
 		select {
 		case <-ctx.Done():

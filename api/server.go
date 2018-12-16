@@ -3,7 +3,6 @@ package api
 import (
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
-	log "github.com/sirupsen/logrus"
 	"time"
 )
 
@@ -34,8 +33,6 @@ func ServerRun() {
 	e.GET("/api/sniffoff", FnSniffOff)
 
 	e.POST("/api/sniff", FnSniffStart)
-
-	log.Info("⇨ http server starting on ", ":"+sHost)
 	svrstus.Stime = time.Now().Format("2006-01-02 15:04:05")
 
 	e.Logger.Fatal(e.Start(":" + sHost))
