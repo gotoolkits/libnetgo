@@ -13,8 +13,8 @@ import (
 const userFile = "/etc/passwd"
 
 type User struct {
-	Uid      string // 用户ID
-	Gid      string // 初级组ID
+	Uid      string
+	Gid      string
 	Username string
 	Name     string
 	HomeDir  string
@@ -83,7 +83,7 @@ func buildUser(parts []string) *User {
 
 func findUsername(name string, r io.Reader) (*User, error) {
 	bs := bufio.NewScanner(r)
-	// looking for the first field
+
 	substr := []byte(name + ":")
 	for bs.Scan() {
 		lineBytes := bs.Bytes()
@@ -105,8 +105,6 @@ func findUsername(name string, r io.Reader) (*User, error) {
 	return nil, unknownUserError(name)
 }
 
-// removeComment returns line, removing any '#' byte and any following
-// bytes.
 func removeComment(line string) string {
 	if i := strings.Index(line, "#"); i != -1 {
 		return line[:i]

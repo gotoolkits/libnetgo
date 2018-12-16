@@ -3,6 +3,8 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/gotoolkits/libnetgo/api"
+	"github.com/gotoolkits/libnetgo/common"
 	"github.com/gotoolkits/libnetgo/connect"
 	"github.com/gotoolkits/libnetgo/netstat"
 	"github.com/gotoolkits/libnetgo/packet"
@@ -11,37 +13,45 @@ import (
 )
 
 var (
+	h        bool
+	svr      bool
+	console  bool
 	host     string
 	interval int
 	connType string
 )
 
 func init() {
+	flag.BoolVar(&h, "h", false, "libnetgo help")
+	flag.BoolVar(&svr, "s", false, "api server")
+	flag.BoolVar(&console, "c", false, "console mode")
 	flag.StringVar(&host, "ip", "", "ip address for pcap.")
 	flag.IntVar(&interval, "r", 2, "To get datas interval,default 2 second.")
 	flag.StringVar(&connType, "t", "all", "all/remote/local")
+	flag.Usage = usage
 }
 
 func main() {
 	flag.Parse()
-
-	if len(host) < 8 {
-		fmt.Println("please set ip address for pcap, '-ip x.x.x.x' ")
-		os.Exit(1)
+	if h {
+		flag.Usage()
+	}
+	if svr {
+		go api.ServerRun()
 	}
 
-	go packet.StartNetSniff(host)
+	if len(host) > 1 {
+		if ok, _ := common.VerifyIP(host); ok {
+			packet.StartNetSniff(host)
+		}
+	}
 
 	for {
-
-		if connType == "all" {
-			formatNetstat(connect.GetAllConns())
-		} else if connType == "local" {
-			formatNetstat(connect.GetLocalToConns())
+		if console {
+			formatNetstat(connect.GetConns(connType))
 		} else {
-			formatNetstat(connect.GetRemoteFromConns())
+			connect.GetConns(connType)
 		}
-
 		time.Sleep(time.Duration(interval) * time.Second)
 	}
 
@@ -56,4 +66,13 @@ func formatNetstat(ns map[string]netstat.Process) {
 			info.Pid, info.User, itemId, info.In/1024, info.Out/1024, info.OutRate/1024, info.InRate/1024, info.Exe)
 	}
 
+}
+
+func usage() {
+	fmt.Fprintf(os.Stderr, `libnetgo version: libnet/1.0
+Usage: libnetgo [-hs] [-ip ipAddr] [-r interval] [-t all/remote/local] 
+
+Options:
+`)
+	flag.PrintDefaults()
 }

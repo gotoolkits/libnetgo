@@ -36,11 +36,19 @@ var (
 	Dir                   string
 	pLen                  uint16
 
-	PkgAcc map[string]map[string]int64
+	PkgAcc  map[string]map[string]int64
+	AccIntv int64 = 3
 )
 
-func StartNetSniff(ipAddr string) {
+func init() {
+	PkgAcc = make(map[string]map[string]int64)
+}
 
+func StartNetSniff(ipAddr string) {
+	go startNetSniff(ipAddr)
+}
+
+func startNetSniff(ipAddr string) {
 	handle, err := getPcapHandle(ipAddr)
 	if err != nil {
 		return
@@ -48,7 +56,6 @@ func StartNetSniff(ipAddr string) {
 	defer handle.Close()
 
 	packetSource := gopacket.NewPacketSource(handle, handle.LinkType())
-	PkgAcc = make(map[string]map[string]int64)
 
 	go accumulator()
 
@@ -118,7 +125,6 @@ func StartNetSniff(ipAddr string) {
 					}
 					PkgAcc[itemId][Dir] = PkgAcc[itemId][Dir] + int64(pLen)
 				}
-				//	fmt.Println(PkgAcc)
 			}
 		}
 	}
@@ -141,7 +147,7 @@ func getPcapHandle(ip string) (*pcap.Handle, error) {
 	if device == "" {
 		return nil, errors.New("find device error")
 	}
-	fmt.Println(device)
+
 	h, err := pcap.OpenLive(device, snapshot_len, promiscuous, timeout)
 	if err != nil {
 		return nil, err
@@ -163,7 +169,7 @@ func accumulator() {
 			out := pkgMap["out"]
 
 			if pkgMap["lastAccTime"] == 0 {
-				pkgMap["lastAccTime"] = start - 3
+				pkgMap["lastAccTime"] = start - AccIntv
 			}
 
 			last := pkgMap["lastAccTime"]
@@ -188,6 +194,6 @@ func accumulator() {
 			pkgMap["lastAccOut"] = out
 		}
 
-		time.Sleep(3 * time.Second)
+		time.Sleep(time.Duration(AccIntv) * time.Second)
 	}
 }

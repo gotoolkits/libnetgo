@@ -59,7 +59,6 @@ type Process struct {
 }
 
 func getData(t string) []string {
-	// Get data from tcp or udp file.
 	var proc_t string
 
 	if t == "tcp" {
