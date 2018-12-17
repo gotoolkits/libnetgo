@@ -4,13 +4,13 @@ import (
 	"flag"
 	"fmt"
 	"github.com/gotoolkits/libnetgo/api"
-	"github.com/gotoolkits/libnetgo/common"
-	"github.com/gotoolkits/libnetgo/connect"
+	//"github.com/gotoolkits/libnetgo/common"
+	//	"github.com/gotoolkits/libnetgo/connect"
 	"github.com/gotoolkits/libnetgo/netstat"
 	//	"github.com/gotoolkits/libnetgo/packet"
-	log "github.com/sirupsen/logrus"
+	//	log "github.com/sirupsen/logrus"
 	"os"
-	"time"
+	//	"time"
 )
 
 var (
@@ -38,26 +38,28 @@ func main() {
 		flag.Usage()
 		os.Exit(0)
 	}
-	if svr {
-		go api.ServerRun()
-	}
+	// if svr {
+	// 	go api.ServerRun()
+	// }
 
-	if len(host) > 1 {
-		if ok, _ := common.VerifyIP(host); ok {
-			api.HostIP = host
-		}
-	} else {
-		log.Warningln("Unspecified IP parameter'-ip', unable to open packet capture function")
-	}
+	api.ServerRun()
 
-	for {
-		if console {
-			formatNetstat(connect.GetConns(connType))
-		} else {
-			connect.GetConns(connType)
-		}
-		time.Sleep(time.Duration(interval) * time.Second)
-	}
+	// if len(host) > 1 {
+	// 	if ok, _ := common.VerifyIP(host); ok {
+	// 		api.HostIP = host
+	// 	}
+	// } else {
+	// 	log.Warningln("Unspecified IP parameter'-ip', unable to open packet capture function")
+	// }
+
+	// for {
+	// 	if console {
+	// 		formatNetstat(connect.GetConns(connType))
+	// 	} else {
+	// 		connect.GetConns(connType)
+	// 	}
+	// 	time.Sleep(time.Duration(interval) * time.Second)
+	// }
 
 }
 

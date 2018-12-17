@@ -6,6 +6,8 @@ import (
 
 	"github.com/labstack/echo"
 	log "github.com/sirupsen/logrus"
+	"html/template"
+	"io"
 	"net/http"
 )
 
@@ -37,6 +39,14 @@ var (
 	HostIP  string
 )
 
+type TemplateRenderer struct {
+	templates *template.Template
+}
+
+func (t *TemplateRenderer) Render(w io.Writer, name string, data interface{}, c echo.Context) error {
+	return t.templates.ExecuteTemplate(w, name, data)
+}
+
 func init() {
 
 	info = SysInfo{
@@ -47,6 +57,10 @@ func init() {
 		Author:  "gotoolkits",
 	}
 
+}
+
+func fnTcp(c echo.Context) error {
+	return c.Render(http.StatusOK, "webUi", connect.GetConnsList())
 }
 
 func fnInfo(c echo.Context) error {

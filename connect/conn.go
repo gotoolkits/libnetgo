@@ -141,6 +141,26 @@ func GetListenPortAndNamesV6() map[string]string {
 	return m
 }
 
+func GetConnsList() []netstat.Process {
+
+	return []netstat.Process{
+		{User: "root",
+			Name:        "test",
+			Pid:         "1010",
+			Exe:         "wget",
+			State:       "sss",
+			Ip:          "8.8.8.8",
+			Port:        8080,
+			ForeignIp:   "127.0.0.1",
+			ForeignPort: 8080,
+			In:          1,
+			Out:         1,
+			InRate:      1,
+			OutRate:     1},
+	}
+	// return netstat.Tcp()
+}
+
 func isListenPort(port string) bool {
 	list := GetListenPortAndNames()
 	_, ok := list[port]

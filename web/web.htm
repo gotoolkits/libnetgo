@@ -1,0 +1,186 @@
+{{ define "webUi" }}
+<!DOCTYPE html>
+<!-- saved from url=(0042)https://v3.bootcss.com/examples/dashboard/ -->
+<html lang="zh-CN"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="https://v3.bootcss.com/favicon.ico">
+
+    <title>LibNetGo linux network anlayizer</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="web/web_files/bootstrap.min.css" rel="stylesheet">
+
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <link href="web/web_files/ie10-viewport-bug-workaround.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="web/web_files/dashboard.css" rel="stylesheet">
+
+    <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
+    <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+    <script src="web/web_files/ie-emulation-modes-warning.js"></script>
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="https://v3.bootcss.com/examples/dashboard/#">LibNetGo_UI</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="https://v3.bootcss.com/examples/dashboard/#">Sniff</a></li>
+            <li><a href="https://v3.bootcss.com/examples/dashboard/#">Local_Only</a></li>
+            <li><a href="https://v3.bootcss.com/examples/dashboard/#">Remote_Only</a></li>
+            <li><a href="https://v3.bootcss.com/examples/dashboard/#">Help</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-sm-3 col-md-2 sidebar">
+          <ul class="nav nav-sidebar">
+            <li class="active"><a href="#">TCP <span class="sr-only">(current)</span></a></li>
+            <li><a href="#">UDP </a></li>
+          </ul>
+        </div>
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+          <div class="table-responsive">
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>PID</th>
+                  <th>USER</th>
+                  <th>PROGRAM</th>
+                  <th>LOCAL_ADDR</th>
+                  <th>REMOTE_ADDR</th>
+                  <th>SntTotal</th>
+                  <th>RcvTotal(B)</th>
+                  <th>Sent</th>
+                  <th>Received(B/s)</th>
+                </tr>
+              </thead>
+              <tbody>
+                {{ range . }}
+                <tr>
+                  <td>{{ .Pid }}</td>
+                  <td>{{ .User }}</td>
+                  <td>{{ .Exe }}</td>
+                  <td>{{ .Ip }}:{{ .Port }}</td>
+                  <td>{{ .ForeignIp }}:{{ .ForeignPort }}</td>
+                  <td>{{ .In }}</td>
+                  <td>{{ .Out }}</td>
+                  <td>{{ .InRate }}</td>
+                  <td>{{ .OutRate }}</td>
+                </tr>
+               {{ end }}
+               <!--
+               <tr>
+                  <td>1108</td>
+                  <td>root</td>
+                  <td>/usr/bin/wget</td>
+                  <td>172.10.10.15:13390</td>
+                  <td>8.10.10.5:80</td>
+                  <td>10</td>
+                  <td>1039</td>
+                  <td>10</td>
+                  <td>38</td>
+                </tr>
+                <tr>
+                  <td>1108</td>
+                  <td>root</td>
+                  <td>/usr/bin/wget</td>
+                  <td>172.10.10.15:25330</td>
+                  <td>8.10.10.6:443</td>
+                  <td>301</td>
+                  <td>3096</td>
+                  <td>115</td>
+                  <td>115</td>
+                </tr>
+                <tr>
+                  <td>1109</td>
+                  <td>lab</td>
+                  <td>/usr/local/aegis/aegis_client/aegis_10_51/AliYunDun</td>
+                  <td>172.10.10.15:23515</td>
+                  <td>8.10.10.6:443</td>
+                  <td>1</td>
+                  <td>1</td>
+                  <td>1</td>
+                  <td>1</td>
+                </tr>
+                <tr>
+                  <td>1109</td>
+                  <td>lab</td>
+                  <td>/usr/sbin/sshd</td>
+                  <td>172.10.10.15:23515</td>
+                  <td>8.10.10.6:443</td>
+                  <td>1</td>
+                  <td>1</td>
+                  <td>1</td>
+                  <td>1</td>
+                </tr>
+                <tr>
+                  <td>1109</td>
+                  <td>lab</td>
+                  <td>/usr/local/eye/agent/bin/eye-agent</td>
+                  <td>172.10.10.15:23515</td>
+                  <td>8.10.10.6:443</td>
+                  <td>1</td>
+                  <td>1</td>
+                  <td>1</td>
+                  <td>1</td>
+                </tr>
+                <tr>
+                  <td>1109</td>
+                  <td>lab</td>
+                  <td>/usr/local/filebeat-5.6.3-linux-x86_64/filebeat</td>
+                  <td>172.10.10.15:23515</td>
+                  <td>8.10.10.6:443</td>
+                  <td>1</td>
+                  <td>1</td>
+                  <td>1</td>
+                  <td>1</td>
+                </tr>
+              -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="web/web_files/jquery.min.js"></script>
+    <script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery.min.js"><\/script>')</script>
+    <script src="web/web_files/bootstrap.min.js"></script>
+    <!-- Just to make our placeholder images work. Don't actually copy the next line! -->
+    <script src="web/web_files/holder.min.js"></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="web/web_files/ie10-viewport-bug-workaround.js"></script>
+  
+
+</body></html>
+{{ end }}

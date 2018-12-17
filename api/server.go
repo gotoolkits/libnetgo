@@ -3,6 +3,7 @@ package api
 import (
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
+	"html/template"
 	"time"
 )
 
@@ -14,13 +15,19 @@ func ServerRun() {
 	e := echo.New()
 	e.HideBanner = true
 
+	renderer := &TemplateRenderer{
+		templates: template.Must(template.ParseGlob("web/web.htm")),
+	}
+	e.Renderer = renderer
+
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowOrigins: []string{"*"},
 		AllowMethods: []string{echo.GET, echo.HEAD, echo.PUT, echo.POST},
 		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept},
 	}))
 
-	// e.Static("/static", "assets")
+	e.Static("/web/web_files", "web/web_files")
+	e.GET("/web", fnTcp)
 
 	//self running status for monitor
 	e.GET("/health", fnHealthCheck)
