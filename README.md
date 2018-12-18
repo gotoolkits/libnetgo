@@ -1,4 +1,4 @@
-### Linux 网络分析工具
+# libNetGo (Linux网络分析工具)
 
 > libNetGo特点
 
@@ -8,6 +8,8 @@
 - Golang+websocket开发
 - API接口Json数据输出和网络包统计开关控制
 
+
+![libnetgo](https://github.com/gotoolkits/libnetgo/blob/master/pics/libnetgo_1.gif)
 
 
 > 安装
