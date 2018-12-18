@@ -8,8 +8,14 @@
 - Golang+websocket开发
 - API接口Json数据输出和网络包统计开关控制
 
+> libNetGo命令行输出
 
-![libnetgo](https://github.com/gotoolkits/libnetgo/blob/master/pics/libnetgo_1.gif)
+![libnetgo](https://github.com/gotoolkits/libnetgo/blob/master/pics/pic1.png)
+
+
+> libNetGo WebUI输出
+
+![libnetgo](https://github.com/gotoolkits/libnetgo/blob/master/pics/pic2.png)
 
 
 > 安装
@@ -43,3 +49,8 @@ libnetgo [-hs] [-ip ipAddr] [-r interval] [-t all/remote/local]
   -s	开启API服务（默认开启true，false/true）
   -t    输出的TCP连接类型 （all/remote/local 默认"all")
 ```
+
+>  使用演示
+
+![libnetgo](https://github.com/gotoolkits/libnetgo/blob/master/pics/libnetgo_1.gif)
+
