@@ -216,6 +216,12 @@ func netstat(t string) []Process {
 		fip_port := strings.Split(line_array[2], ":")
 
 		fip := convertIp(fip_port[0])
+
+		// not write local listenning records
+		if fip == "0.0.0.0" {
+			continue
+		}
+
 		fport := hexToDec(fip_port[1])
 
 		state := STATE[line_array[3]]
