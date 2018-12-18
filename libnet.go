@@ -41,7 +41,7 @@ func main() {
 		go api.ServerRun()
 	}
 
-	// api.ServerRun()
+	//api.ServerRun()
 
 	if len(host) > 1 {
 		if ok, _ := common.VerifyIP(host); ok {

@@ -156,6 +156,19 @@ func GetConnsList() []netstat.Process {
 	// 		Out:         1,
 	// 		InRate:      1,
 	// 		OutRate:     1},
+	// 	{User: "lab",
+	// 		Name:        "lab",
+	// 		Pid:         "1010",
+	// 		Exe:         "wget",
+	// 		State:       "sss",
+	// 		Ip:          "8.8.8.8",
+	// 		Port:        8080,
+	// 		ForeignIp:   "127.0.0.1",
+	// 		ForeignPort: 8080,
+	// 		In:          1,
+	// 		Out:         1,
+	// 		InRate:      1,
+	// 		OutRate:     1},
 	// }
 	return netstat.Tcp()
 }

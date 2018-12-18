@@ -3,7 +3,9 @@ package api
 import (
 	"github.com/gotoolkits/libnetgo/connect"
 	"github.com/gotoolkits/libnetgo/packet"
+	"time"
 
+	"github.com/gorilla/websocket"
 	"github.com/labstack/echo"
 	log "github.com/sirupsen/logrus"
 	"html/template"
@@ -37,6 +39,8 @@ var (
 	uuid    = "c98bad34-e0f2-4eec-bf98-2eda26af935c"
 	info    SysInfo
 	HostIP  string
+
+	upgrader = websocket.Upgrader{}
 )
 
 type TemplateRenderer struct {
@@ -60,7 +64,25 @@ func init() {
 }
 
 func fnTcp(c echo.Context) error {
-	return c.Render(http.StatusOK, "webUi", connect.GetConnsList())
+
+	//c.Render(http.StatusOK, "webUi", "")
+	ws, err := upgrader.Upgrade(c.Response(), c.Request(), nil)
+	if err != nil {
+		log.Errorln(err)
+		return err
+	}
+	defer ws.Close()
+
+	for {
+		// Write
+		err := ws.WriteJSON(connect.GetConnsList())
+		if err != nil {
+			log.Errorln(err)
+			return nil
+		}
+		time.Sleep(2 * time.Second)
+	}
+	//	return c.Render(http.StatusOK, "webUi", connect.GetConnsList())
 }
 
 func fnInfo(c echo.Context) error {

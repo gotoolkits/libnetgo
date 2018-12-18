@@ -26,8 +26,8 @@ func ServerRun() {
 		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept},
 	}))
 
-	e.Static("/web/web_files", "web/web_files")
-	e.GET("/web", fnTcp)
+	e.Static("/", "web")
+	e.GET("/ws", fnTcp)
 
 	//self running status for monitor
 	e.GET("/health", fnHealthCheck)
