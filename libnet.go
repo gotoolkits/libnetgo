@@ -26,7 +26,7 @@ func init() {
 	flag.BoolVar(&svr, "s", true, "api server")
 	flag.BoolVar(&console, "c", false, "console mode")
 	flag.StringVar(&host, "ip", "", "ip address for pcap.")
-	flag.IntVar(&interval, "r", 2, "To get datas interval,default 2 second.")
+	flag.IntVar(&interval, "r", 3, "To get datas interval,default 2 second.")
 	flag.StringVar(&connType, "t", "all", "all/remote/local")
 	flag.Usage = usage
 }

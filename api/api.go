@@ -80,7 +80,7 @@ func fnTcp(c echo.Context) error {
 			log.Errorln(err)
 			return nil
 		}
-		time.Sleep(2 * time.Second)
+		time.Sleep(3 * time.Second)
 	}
 	//	return c.Render(http.StatusOK, "webUi", connect.GetConnsList())
 }

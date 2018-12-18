@@ -73,10 +73,15 @@
         <div id="navbar" class="navbar-collapse collapse">
           
           <ul class="nav navbar-nav navbar-right">
-            <li><a href="https://v3.bootcss.com/examples/dashboard/#">Sniff</a></li>
-            <li><a href="https://v3.bootcss.com/examples/dashboard/#">Local_Only</a></li>
-            <li><a href="https://v3.bootcss.com/examples/dashboard/#">Remote_Only</a></li>
-            <li><a href="https://v3.bootcss.com/examples/dashboard/#">Help</a></li>
+            <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">API</a>
+              <ul class="dropdown-menu">
+                <li><a href="api/sniffon">Sniff_ON</a></li>
+                <li><a href="api/sniffoff">Sniff_OFF</a></li>
+                <li><a href="api/getlconns">Local_Only</a></li>
+                <li><a href="api/getrconns">Remote_Only</a></li>
+              </ul>
+           </li>
           </ul>
         </div>
       </div>
